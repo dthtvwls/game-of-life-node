@@ -1,0 +1,13 @@
+{
+  "name": "game-of-life",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "coffee server.coffee"
+  },
+  "dependencies": {
+    "coffee-script": "*",
+    "express": "*",
+    "lodash": "*",
+    "socket.io": "*"
+  }
+}
