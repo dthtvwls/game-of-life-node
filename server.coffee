@@ -45,11 +45,10 @@ neighbors = (y, x)->
           world[(y - 1 + sy) % sy][(x + 1     ) % sx]
           
   console.log y+','+x+':'+total
-          
-  if world[y][x]
-    return total == 3 || total == 2
-  else
-    return total == 3
+  
+  return 1 if total == 3
+  return 1 if total == 2 && world[y][x]
+  return 0
 
 do main = ->
   console.log world
