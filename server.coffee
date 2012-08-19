@@ -1,6 +1,8 @@
+cluster = require 'cluster'
 express = require 'express'
-http = require 'http'
-_ = require 'lodash'
+http    = require 'http'
+_       = require 'lodash'
+redis   = require 'redis'
 
 app = express().configure ->
   @use express.logger 'dev'
@@ -11,59 +13,57 @@ app = express().configure ->
 .configure 'development', ->
   @use express.errorHandler()
 
-server = http.createServer(app).listen process.env.PORT || 8888
+io = require('socket.io').listen http.createServer(app).listen process.env.PORT || 8888
 
-io = require('socket.io').listen server
+# reserve 2d array by size, and random-fill
+Matrix = (y, x)->
+  ary = Array y
+  for item, i in ary
+    ary[i] = Array x
+    for item, j in ary[i]
+      ary[i][j] = Math.round Math.random()
+  
+world = Matrix 60, 60
+next  = Matrix 60, 60
 
+h = world.length - 1
+w = world[h].length - 1
 
-# world matrix (take note, it is column-major!)
-world = [
-  [0, 0, 0, 0, 0]
-  [0, 0, 1, 0, 0]
-  [0, 0, 0, 1, 0]
-  [0, 1, 1, 1, 0]
-  [0, 0, 0, 0, 0]
-]
-
-# swap
-new_world = [
-  [0, 0, 0, 0, 0]
-  [0, 0, 0, 0, 0]
-  [0, 0, 0, 0, 0]
-  [0, 0, 0, 0, 0]
-  [0, 0, 0, 0, 0]
-]
-
+# whether a cell should be alive
 alive = (y, x)->
   
-  y0 = if y > 0 then y - 1 else 4
-  y1 = if y < 4 then y + 1 else 0
-  x0 = if x > 0 then x - 1 else 4
-  x1 = if x < 4 then x + 1 else 0
+  # neighbor detection should wrap boundary
+  y0 = if y > 0 then y - 1 else h
+  y1 = if y < h then y + 1 else 0
+  x0 = if x > 0 then x - 1 else w
+  x1 = if x < w then x + 1 else 0
   
-  total = world[y ][x0] +
-          world[y ][x1] +
-          world[y0][x ] +
-          world[y0][x0] +
-          world[y0][x1] +
-          world[y1][x ] +
-          world[y1][x0] +
-          world[y1][x1]
+  # sum of living neighbors
+  total = world[y ][x0] + world[y ][x1] +
+          world[y0][x ] + world[y1][x ] +
+          world[y0][x0] + world[y0][x1] +
+          world[y1][x0] + world[y1][x1]
 
   return 1 if total == 3
   return 1 if total == 2 && world[y][x]
   return 0
 
-do main = ->
+setInterval ->
 
-  for y in [0..4]
-    for x in [0..4]
-      new_world[y][x] = alive y, x
-  
+  for y in [0..h]
+    for x in [0..w]
+      next[y][x] = alive y, x
+
   # ref swap
-  tmp = world
-  world = new_world
-  new_world = tmp
-      
+  tmp   = world
+  world = next
+  next  = tmp
+
   io.sockets.emit 'world', world: world
-  setTimeout main, 500
+
+, 50
+
+io.sockets.on 'connection', (socket)->
+  socket.on 'cell', (data)->    
+    unless data.y > h || data.x > w
+      world[data.y][data.x] = 1
