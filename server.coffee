@@ -61,7 +61,7 @@ setInterval ->
 
   io.sockets.emit 'world', world: world
 
-, 50
+, 100
 
 io.sockets.on 'connection', (socket)->
   socket.on 'cell', (data)->    
