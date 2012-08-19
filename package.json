@@ -5,12 +5,8 @@
     "start": "coffee server.coffee"
   },
   "dependencies": {
-    "cluster":       "*",
     "coffee-script": "*",
     "express":       "*",
-    "hiredis":       "*",
-    "lodash":        "*",
-    "redis":         "*",
     "socket.io":     "*"
   }
 }

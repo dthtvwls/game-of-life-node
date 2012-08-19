@@ -1,8 +1,8 @@
-cluster = require 'cluster'
+#cluster = require 'cluster'
 express = require 'express'
 http    = require 'http'
-_       = require 'lodash'
-redis   = require 'redis'
+#_       = require 'lodash'
+#redis   = require 'redis'
 
 app = express().configure ->
   @use express.logger 'dev'
