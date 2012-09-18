@@ -1,16 +1,24 @@
 {
-  "name": "game-of-life",
+  "name": "game-of-life-node",
   "version": "0.0.1",
   "engines": {
-    "node": "0.8.7",
-    "npm": "1.1.49"
+    "node": "0.8.9",
+    "npm": "1.1.61"
   },
   "scripts": {
-    "start": "coffee server.coffee"
+    "start" : "killall node; supervisor -e 'js|coffee' server.coffee > server.log 2>&1 &",
+    "stop"  : "killall node",
+    "test"  : "jasmine-node --verbose --coffee spec"
   },
   "dependencies": {
     "coffee-script": "*",
     "express":       "*",
+    "hiredis":       "*",
+    "redis":         "*",
     "socket.io":     "*"
+  },
+  "devDependencies": {
+    "jasmine-node": "*",
+    "supervisor"  : "*"
   }
 }
