@@ -1,10 +1,16 @@
-# reserve 2d array by size and random-fill
-module.exports.Matrix = Matrix = (y, x)->
+# reserve 2d array by size
+module.exports.Matrix = Matrix = (y, x, fill)->
   ary = Array y
   for item, i in ary
     ary[i] = Array x
     for item, j in ary[i]
-      ary[i][j] = Math.round Math.random()
+      if fill?
+        if fill == 0
+          ary[i][j] = 0
+        else
+          ary[i][j] = 1
+      else
+        ary[i][j] = Math.round Math.random()
 
 
 
@@ -43,3 +49,9 @@ module.exports.step = step = (world)->
       next[y][x] = alive world, y, x
 
   return next
+  
+module.exports.pack = (world)->
+  return Number.MAX_VALUE
+
+module.exports.unpack = (numbers)->
+  return Matrix 32, 32, 1

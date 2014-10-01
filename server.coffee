@@ -1,23 +1,16 @@
 express = require 'express'
-http    = require 'http'
-lib     = require './lib'
+app     = express()
+server  = require('http').Server(app)
+io      = require('socket.io')(server)
 
+server.listen 8888
 
-#########################
-# express/socket.io setup
-
-app = express().configure ->
-  @use express.logger 'dev'
-  @use express.static 'public'
-.configure 'development', ->
-  @use express.errorHandler()
-
-io = require('socket.io').listen http.createServer(app).listen 8888
-
+app.use express.static 'public'
 
 
 # create the world
-world = lib.Matrix 60, 60
+lib   = require './lib'
+world = lib.Matrix 32, 32
 
 
 # main loop

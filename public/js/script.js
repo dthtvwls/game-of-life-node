@@ -29,15 +29,15 @@
   // receive server data via socket.io
   socket.on("world", function (data) {
 
-    var x, y, world = data.world;
-
     // white out the whole canvas
     canvasCtx.fillStyle = "white";
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
+    var world = data.world;
+
     // World matrix is column-major
-    for (y = 0; y < world.length; y++) {
-      for (x = 0; x < world[y].length; x++) {
+    for (var y = 0; y < world.length; y++) {
+      for (var x = 0; x < world[y].length; x++) {
         // draw the cell if it is alive
         if (world[y][x]) drawCell(x, y);
       }
